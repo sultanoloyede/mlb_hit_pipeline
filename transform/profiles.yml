@@ -1,0 +1,11 @@
+mlb_hits:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: ../data/local.duckdb
+      threads: 4
+    prod:
+      type: duckdb
+      path: "md:mlb_hits?motherduck_token={{ env_var('MOTHERDUCK_TOKEN') }}"
+      threads: 4

@@ -1,0 +1,9 @@
+version: 2
+
+models:
+  - name: stg_heartbeat
+    description: Pipeline run log — proves the EL + T path end to end.
+    columns:
+      - name: run_at
+        tests:
+          - not_null

@@ -1,0 +1,28 @@
+# python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# local data & warehouses — the warehouse is the source of truth, not git
+data/
+*.duckdb
+*.duckdb.wal
+*.parquet
+*.csv
+
+# dlt
+.dlt/secrets.toml
+
+# dbt
+transform/target/
+transform/dbt_packages/
+transform/logs/
+.user.yml
+
+# mlflow
+mlruns/
+
+# misc
+.DS_Store
+logs/

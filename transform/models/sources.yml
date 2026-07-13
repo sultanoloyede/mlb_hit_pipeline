@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: raw
+    description: Datasets loaded verbatim by dlt (append-only).
+    schema: raw
+    tables:
+      - name: heartbeat
+        description: One row per scheduled pipeline run.
+        loaded_at_field: run_at
+        freshness:
+          error_after: {count: 26, period: hour}

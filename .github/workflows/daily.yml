@@ -1,0 +1,33 @@
+name: daily
+
+on:
+  schedule:
+    - cron: "0 16 * * *"   # 16:00 UTC = noon ET, see PLAN.md §5
+  workflow_dispatch:        # manual trigger for testing
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    env:
+      MOTHERDUCK_TOKEN: ${{ secrets.MOTHERDUCK_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: EL — dlt pipelines
+        run: python ingestion/pipelines.py heartbeat
+
+      - name: T — dbt build + tests
+        run: dbt build --profiles-dir . --target prod
+        working-directory: transform
+
+      - name: Source freshness
+        run: dbt source freshness --profiles-dir . --target prod
+        working-directory: transform

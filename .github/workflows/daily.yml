@@ -21,11 +21,22 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: EL — dlt pipelines
+      - name: EL — heartbeat
         run: python ingestion/pipelines.py heartbeat
 
+      - name: EL — statcast (yesterday)
+        run: python ingestion/pipelines.py statcast
+
+      - name: EL — mlb stats api (results window + today's slate)
+        run: python ingestion/pipelines.py statsapi
+
+      - name: EL — WAR snapshot (baseball-reference)
+        run: python ingestion/pipelines.py war
+
       - name: T — dbt build + tests
-        run: dbt build --profiles-dir . --target prod
+        run: |
+          dbt deps
+          dbt build --profiles-dir . --target prod
         working-directory: transform
 
       - name: Source freshness

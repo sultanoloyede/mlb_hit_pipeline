@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: int_pitch_flags
+    description: Pitch-level classification flags (prototype-parity definitions).
+
+  - name: int_game_starters
+    description: Actual starting pitcher per game side, from the first pitch thrown.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [game_pk, pitching_side]
+
+  - name: int_batter_game
+    description: Statcast-derived batter-game aggregates (overall).
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [game_pk, batter_id]
+
+  - name: int_batter_game_platoon
+    description: Batter-game rates split by opposing pitcher hand, pivoted wide.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [game_pk, batter_id]

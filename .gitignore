@@ -11,7 +11,8 @@ data/
 *.parquet
 *.csv
 
-# dlt
+# secrets
+.env
 .dlt/secrets.toml
 
 # dbt

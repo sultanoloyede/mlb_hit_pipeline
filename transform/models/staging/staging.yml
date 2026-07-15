@@ -5,5 +5,65 @@ models:
     description: Pipeline run log — proves the EL + T path end to end.
     columns:
       - name: run_at
-        tests:
+        data_tests:
           - not_null
+
+  - name: stg_statcast_pitches
+    description: Pitch level, typed and deduped by (game_pk, at_bat_number, pitch_number).
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [game_pk, at_bat_number, pitch_number]
+    columns:
+      - name: game_pk
+        data_tests: [not_null]
+      - name: game_date
+        data_tests: [not_null]
+      - name: batter_id
+        data_tests: [not_null]
+
+  - name: stg_games
+    description: One row per game, latest load wins.
+    columns:
+      - name: game_pk
+        data_tests: [unique, not_null]
+
+  - name: stg_batting_lines
+    description: Official boxscore batting lines — the label source.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [game_pk, player_id]
+    columns:
+      - name: hits
+        data_tests: [not_null]
+
+  - name: stg_standings
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [standings_date, team_id]
+
+  - name: stg_lineups
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [game_pk, player_id]
+
+  - name: stg_coaches
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [season, team_id, person_id, job_id]
+
+  - name: stg_war_seasons
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [player_id, season, stint]
+
+  - name: stg_war_snapshots
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [player_id, season, stint, snapshot_date]

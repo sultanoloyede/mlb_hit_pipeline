@@ -23,6 +23,11 @@ jobs:
       - name: EL — dlt heartbeat
         run: python ingestion/pipelines.py heartbeat
 
-      - name: T — dbt build + tests
-        run: dbt build --profiles-dir . --target dev
+      # CI has no baseball data: compile everything (catches SQL/jinja
+      # errors), then build only the heartbeat path end to end
+      - name: T — dbt compile + heartbeat build
+        run: |
+          dbt deps
+          dbt compile --profiles-dir . --target dev
+          dbt build --profiles-dir . --target dev --select stg_heartbeat
         working-directory: transform

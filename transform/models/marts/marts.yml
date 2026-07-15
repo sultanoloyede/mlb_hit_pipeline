@@ -1,0 +1,85 @@
+version: 2
+
+models:
+  - name: dim_player
+    columns:
+      - name: player_id
+        data_tests: [unique, not_null]
+
+  - name: dim_team
+    columns:
+      - name: team_id
+        data_tests: [unique, not_null]
+      - name: team_code
+        data_tests: [unique, not_null]
+
+  - name: dim_game
+    columns:
+      - name: game_pk
+        data_tests: [unique, not_null]
+
+  - name: dim_manager
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [season, team_id]
+
+  - name: fct_standings_daily
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [standings_date, team_id]
+
+  - name: fct_batter_game
+    description: >
+      Core analytical table: one row per batter per regular-season game
+      with >= 1 official PA. Label = has_hit. Every column describes
+      THIS game; lagged/point-in-time features live in the ml layer.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [game_pk, batter_id]
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "pa >= 1"
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "hits <= ab + walks"   # sanity: hits bounded by opportunities
+    columns:
+      - name: game_pk
+        data_tests: [not_null]
+      - name: batter_id
+        data_tests: [not_null]
+      - name: game_date
+        data_tests: [not_null]
+      - name: has_hit
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: [0, 1]
+                quote: false
+
+  - name: fct_pitcher_game
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [game_pk, pitcher_id]
+
+  - name: fct_team_game
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [game_pk, team_id]
+
+  - name: fct_batter_vs_pitcher
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [game_pk, batter_id, pitcher_id]
+
+  - name: fct_batter_pitchtype
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [batter_id, pitch_type]

@@ -2,11 +2,50 @@ version: 2
 
 sources:
   - name: raw
-    description: Datasets loaded verbatim by dlt (append-only).
+    description: Datasets loaded verbatim by dlt (append-only; staging dedupes).
     schema: raw
+    # dlt stamps every row with _dlt_load_id (unix epoch of the load)
+    loaded_at_field: "to_timestamp(cast(_dlt_load_id as double))"
+    freshness:
+      warn_after: {count: 26, period: hour}
+      error_after: {count: 50, period: hour}
     tables:
       - name: heartbeat
         description: One row per scheduled pipeline run.
-        loaded_at_field: run_at
+
+      - name: statcast_pitches
+        description: Pitch-level Statcast events (Baseball Savant via pybaseball).
+        # DataFrame loads carry no _dlt_load_id — use the data's own date.
+        # game_date has no time part, so thresholds are wider.
+        loaded_at_field: "cast(game_date as timestamp)"
         freshness:
-          error_after: {count: 26, period: hour}
+          warn_after: {count: 48, period: hour}
+          error_after: {count: 78, period: hour}
+
+      - name: games
+        description: Schedule with venue, status, and probable pitchers (MLB Stats API).
+
+      - name: batting_lines
+        description: Official per-batter boxscore lines for final games — the label source.
+
+      - name: standings
+        description: League/division rank as-of each date.
+
+      - name: lineups
+        description: Batting orders posted for today's games (sparse before first pitch).
+        freshness: null   # legitimately empty at the noon run
+
+      - name: coaches
+        description: Coaching staff per team-season (managers for the research phase).
+        freshness: null   # backfilled once, refreshed rarely
+
+      - name: bref_war_bat_snapshots
+        description: Baseball-Reference batter WAR, season-to-date, stamped daily (point-in-time quality tier).
+        loaded_at_field: "cast(snapshot_date as timestamp)"
+        freshness:
+          warn_after: {count: 48, period: hour}
+          error_after: {count: 78, period: hour}
+
+      - name: bref_war_bat_seasons
+        description: Baseball-Reference batter WAR, one row per player-season-stint (backfill).
+        freshness: null

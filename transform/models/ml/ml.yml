@@ -1,0 +1,25 @@
+version: 2
+
+models:
+  - name: feat_batter_game
+    description: >
+      Point-in-time features, one row per batter-game. Every feature is
+      computed strictly from data before the game date (window frames
+      end at 1 preceding; league prior joined as-of; WAR from the prior
+      season). has_hit / pa / hits are targets. Guarded by
+      tests/assert_no_feature_leakage.sql.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [game_pk, batter_id]
+    columns:
+      - name: game_pk
+        data_tests: [not_null]
+      - name: batter_id
+        data_tests: [not_null]
+      - name: game_date
+        data_tests: [not_null]
+      - name: has_hit
+        data_tests: [not_null]
+      - name: eb_hit_per_pa_career
+        data_tests: [not_null]

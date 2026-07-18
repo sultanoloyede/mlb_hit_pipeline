@@ -20,6 +20,7 @@ models:
       +materialized: table
       +schema: ml
     output:
-      # predictions are append-only; models here become incremental in Phase 6
-      +materialized: table
+      # views over the append-only predictions table, so grading always
+      # reflects the latest outcomes without a rebuild
+      +materialized: view
       +schema: output

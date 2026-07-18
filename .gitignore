@@ -23,6 +23,7 @@ transform/logs/
 
 # mlflow
 mlruns/
+mlflow.db
 
 # misc
 .DS_Store

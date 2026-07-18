@@ -1,0 +1,152 @@
+# Single source of truth for the ML plane: temporal splits, universe,
+# feature lists (Phase 3 promoted factors only), model params, gates.
+
+splits:
+  train_seasons: [2021, 2022, 2023, 2024]
+  calib_season: 2025          # first half fits isotonic, second half evaluates
+  test_seasons: [2026]        # touched only by the Phase 5 backtest
+  embargo_days: 7             # gap before the early-stopping tail
+  early_stop_tail_days: 60    # last N days of TRAIN -> early stopping set
+
+universe:
+  # the product scores the pre-game slate -> train/evaluate on starters
+  starters_only: true
+
+target: has_hit
+recency_half_life_days: 730   # 2023 rule changes -> downweight old seasons
+
+eval:
+  top_k: [5, 10]
+  tier_col: eb_hit_per_pa_career    # quality tiers = quartiles of this
+  pa_band_col: pa_roll10
+
+gates:
+  baseline_to_beat: eb_pa           # on BOTH log loss and Brier
+  calibration_max_brier_increase: 0.0
+
+lightgbm:
+  n_estimators: 2000
+  learning_rate: 0.03
+  num_leaves: 63
+  min_child_samples: 100
+  feature_fraction: 0.8
+  bagging_fraction: 0.8
+  bagging_freq: 1
+  reg_lambda: 1.0
+  early_stopping_rounds: 100
+
+logistic:
+  C: 1.0
+
+epa_lightgbm:                 # expected-PA regressor (structural model)
+  n_estimators: 400
+  learning_rate: 0.05
+  num_leaves: 31
+  min_child_samples: 200
+
+features:
+  gbm:            # direct classifier — everything promoted in Phase 3
+    - eb_hit_per_pa_career
+    - eb_hit_per_pa_season
+    - career_pa_prior
+    - season_pa_prior
+    - career_games_prior
+    - season_games_prior
+    - has_hit_roll5
+    - has_hit_roll10
+    - has_hit_roll20
+    - has_hit_roll40
+    - hit_per_pa_roll5
+    - hit_per_pa_roll10
+    - hit_per_pa_roll20
+    - hit_per_pa_roll40
+    - pa_roll5
+    - pa_roll10
+    - pa_roll20
+    - pa_roll40
+    - k_pct_roll10
+    - k_pct_roll20
+    - k_pct_roll40
+    - contact_pct_roll20
+    - contact_pct_roll40
+    - chase_rate_roll20
+    - hard_hit_pct_roll20
+    - hard_hit_pct_roll40
+    - barrel_pct_roll20
+    - sweet_spot_pct_roll20
+    - line_drive_pct_roll20
+    - xba_mean_roll20
+    - xba_mean_roll40
+    - xba_minus_ba_roll20
+    - hit_per_pa_platoon_roll10
+    - hit_per_pa_platoon_roll20
+    - hit_per_pa_platoon_roll40
+    - k_pct_platoon_roll20
+    - contact_pct_platoon_roll20
+    - hard_hit_pct_platoon_roll20
+    - war_prev_season
+    - pa_prev_season
+    - team_hits_roll15
+    - team_pa_roll15
+    - opp_xwoba_against_roll15
+    - opp_hits_allowed_per_bf_roll15
+    - opp_k_pct_against_roll15
+    - p_starts_prior
+    - p_hits_per_bf_roll5
+    - p_hits_per_bf_roll10
+    - p_k_pct_roll10
+    - p_xwoba_against_roll10
+    - p_swstr_pct_roll10
+    - p_bf_roll10
+    - hit_streak_entering
+    - hitless_streak_entering
+    - days_rest
+    - batting_order_slot
+    - is_home
+    - is_vs_lhp
+
+  ppa:            # per-PA skill (structural) — NO opportunity features
+    - eb_hit_per_pa_career
+    - eb_hit_per_pa_season
+    - hit_per_pa_roll10
+    - hit_per_pa_roll20
+    - hit_per_pa_roll40
+    - k_pct_roll20
+    - contact_pct_roll20
+    - chase_rate_roll20
+    - hard_hit_pct_roll20
+    - barrel_pct_roll20
+    - sweet_spot_pct_roll20
+    - line_drive_pct_roll20
+    - xba_mean_roll20
+    - xba_minus_ba_roll20
+    - hit_per_pa_platoon_roll20
+    - k_pct_platoon_roll20
+    - war_prev_season
+    - opp_xwoba_against_roll15
+    - opp_k_pct_against_roll15
+    - p_hits_per_bf_roll10
+    - p_k_pct_roll10
+    - p_xwoba_against_roll10
+    - p_swstr_pct_roll10
+    - is_vs_lhp
+    - is_home
+
+  epa:            # expected PA (structural) — opportunity only
+    - batting_order_slot
+    - pa_roll5
+    - pa_roll10
+    - pa_roll20
+    - team_pa_roll15
+    - team_hits_roll15
+    - is_home
+
+  baseline_logistic:
+    - eb_hit_per_pa_career
+    - eb_hit_per_pa_season
+    - pa_roll10
+    - batting_order_slot
+    - hit_per_pa_platoon_roll20
+    - p_xwoba_against_roll10
+    - is_vs_lhp
+    - is_home

@@ -99,8 +99,10 @@ select
 
     -- sample sizes & schedule
     , coalesce(l.career_pa_prior, 0)     as career_pa_prior
+    , coalesce(l.career_hits_prior, 0)   as career_hits_prior
     , coalesce(l.career_games_prior, 0)  as career_games_prior
     , coalesce(l.season_pa_prior, 0)     as season_pa_prior
+    , coalesce(l.season_hits_prior, 0)   as season_hits_prior
     , coalesce(l.season_games_prior, 0)  as season_games_prior
     , l.days_rest
 

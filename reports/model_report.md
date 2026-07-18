@@ -7,15 +7,15 @@ Evaluation: second half of 2025 (21,609 batter-games, base rate 0.615).
 
 | model | log_loss | brier | auc | n | top5_hit_rate | top10_hit_rate |
 |---|---|---|---|---|---|---|
-| gbm_raw | 0.6594 | 0.2334 | 0.5705 | 21609 | 0.7596 | 0.7191 |
-| structural_cal | 0.6594 | 0.2334 | 0.5704 | 21609 | 0.7416 | 0.7393 |
+| gbm_raw | 0.6594 | 0.2334 | 0.5702 | 21609 | 0.7551 | 0.7135 |
+| structural_cal | 0.6594 | 0.2334 | 0.5704 | 21609 | 0.7348 | 0.7101 |
+| gbm_cal | 0.6596 | 0.2335 | 0.5698 | 21609 | 0.7191 | 0.7056 |
 | structural_raw | 0.6599 | 0.2337 | 0.5714 | 21609 | 0.7393 | 0.7247 |
 | logistic | 0.6602 | 0.2338 | 0.5667 | 21609 | 0.7483 | 0.7124 |
-| gbm_cal | 0.6605 | 0.2336 | 0.5698 | 21609 | 0.7551 | 0.7157 |
 | eb_pa | 0.6650 | 0.2361 | 0.5562 | 21609 | 0.7281 | 0.7045 |
-| league | 0.6665 | 0.2368 | 0.5000 | 21609 | 0.6202 | 0.5989 |
+| league | 0.6665 | 0.2368 | 0.5000 | 21609 | 0.6067 | 0.6056 |
 
-**Winner: `structural_cal`** — registered as `mlb_hits_hit_model` v1 (alias `production`).
+**Winner: `structural_cal`** — registered as `mlb_hits_hit_model` v2 (alias `production`).
 
 ## Gates
 

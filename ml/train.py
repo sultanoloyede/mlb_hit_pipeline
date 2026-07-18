@@ -174,6 +174,13 @@ def main():
 
     version = None
     if not failures:
+        # Selection and gates used the calib_fit/calib_eval half-split.
+        # The SHIPPED artifact refits isotonic on ALL of CALIB: the low-
+        # probability tail is sparse and a half-season leaves it badly
+        # estimated (caught by the Phase 5 calibration gate).
+        iso_full = IsotonicRegression(out_of_bounds="clip")
+        iso_full.fit(winner.predict_raw(calib), calib["has_hit"])
+        winner.iso = iso_full
         with mlflow.start_run(run_name=f"winner_{winner_name}") as run:
             mlflow.log_params({"winner": winner_name,
                                "n_features": len(feats["gbm" if winner.kind == "gbm" else "ppa"])})

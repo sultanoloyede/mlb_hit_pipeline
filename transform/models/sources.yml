@@ -49,3 +49,10 @@ sources:
       - name: bref_war_bat_seasons
         description: Baseball-Reference batter WAR, one row per player-season-stint (backfill).
         freshness: null
+
+  - name: output
+    description: Tables written by the ML plane (append-only), read by dbt and the dashboard.
+    schema: output
+    tables:
+      - name: predictions
+        description: One row per batter x game x scoring run, written by ml/predict.py.

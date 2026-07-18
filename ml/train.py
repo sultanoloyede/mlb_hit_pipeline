@@ -193,6 +193,10 @@ def main():
             version = mv.version
         from mlflow import MlflowClient
         MlflowClient().set_registered_model_alias(common.MODEL_NAME, "production", version)
+        # keep the committed deployment bundle in sync with the registry
+        # (GitHub Actions can't reach the local sqlite registry)
+        import export_model
+        export_model.export()
 
     # ── report ───────────────────────────────────────────────────────
     lines = [

@@ -4,6 +4,13 @@ dlt[motherduck]>=1.0
 # T
 dbt-duckdb>=1.8
 
+# Warehouse driver — PINNED. MotherDuck publishes its `motherduck`
+# duckdb extension per exact duckdb version; a newer duckdb than
+# MotherDuck supports 404s on the extension download (Actions broke on
+# 1.5.5). Keep this at the version proven locally; bump only after
+# confirming MotherDuck ships the extension for it.
+duckdb==1.4.5
+
 # sources (Phase 1)
 pybaseball>=2.2
 MLB-StatsAPI>=1.7
